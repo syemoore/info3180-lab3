@@ -85,8 +85,8 @@ def send(fname, fmail, subject, message):
 
     formatedMessage = message.format(fname, fmail, name, address, subject, message)
 
-    username = '18011e2b9dbe6d'
-    password = 'b4005f2409552b'
+    username = ''
+    password = ''
 
     server = smtplib.SMTP('smtp.mailtrap.io:2525')
     server.starttls()
