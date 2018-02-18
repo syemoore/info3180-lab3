@@ -7,6 +7,8 @@ This file creates your application.
 
 from app import app
 from flask import render_template, request, redirect, url_for, flash
+from forms import MessageForm
+import smtplib
 
 
 ###
@@ -23,6 +25,24 @@ def home():
 def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
+    
+@app.route('/contact', methods=["POST","GET"])
+def contact():
+    """Render the website's contact page."""
+    theForm = MessageForm()
+
+    if request.method == 'POST':
+        if theForm.validate_on_submit():
+            name = theForm["name"]
+            email = theForm["email"]
+            subject = theForm["subject"]
+            message = theForm["message"]
+            
+            send(name, email, subject, message)
+            
+            flash('Successful')
+            return redirect(url_for('home'))
+    return render_template('contact.html', form = theForm)
 
 
 ###
@@ -56,3 +76,20 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port="8080")
+
+def send(fname, fmail, subject, message):
+    
+    name = "syemoore"
+    address = '@gmail.com'
+    message = """From: {} <{}> To: {} <{}>Subject: {} {}"""
+
+    formatedMessage = message.format(fname, fmail, name, address, subject, message)
+
+    username = '18011e2b9dbe6d'
+    password = 'b4005f2409552b'
+
+    server = smtplib.SMTP('smtp.mailtrap.io:2525')
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(fmail, address, formatedMessage)
+    server.quit()
